@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Satus – A Nossa Equipa</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cream: #f5f0e8;
+      --dark: #111009;
+      --gold: #b8975a;
+      --warm: #e8dfc8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--dark);
+      color: var(--cream);
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── Fake top section so scroll has context ── */
+    .intro-section {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--dark);
+    }
+    .intro-section p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      letter-spacing: 0.25em;
+      color: var(--gold);
+      text-transform: uppercase;
+      opacity: 0.6;
+    }
+
+    /* ── HERO (clip-path reveal) ── */
+    .hero-section {
+      width: 100%;
+      height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .hero-container {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      clip-path: url(#clip-path1);
+      background-color: var(--cream);
+      overflow: hidden;
+    }
+
+    .hero-bg-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: block;
+      opacity: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      opacity: 0;
+      max-width: 100vw;
+      padding: 1rem;
+    }
+
+    .hero-eyebrow {
+      display: block;
+      font-family: 'Montserrat', sans-serif;
+      font-size: clamp(0.55rem, 1.2vw, 0.75rem);
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3.5rem, 10vw, 9rem);
+      font-weight: 300;
+      line-height: 0.92;
+      color: var(--dark);
+      letter-spacing: -0.01em;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      font-weight: 300;
+    }
+
+    /* Hidden SVG clip container */
+    #clipContainer {
+      position: absolute;
+      top: 0; left: 0;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── TEAM SECTION ── */
+    .team-section {
+      background: var(--dark);
+      padding: 120px 6vw 160px;
+      position: relative;
+    }
+
+    .team-header {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .team-label {
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .team-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 300;
+      color: var(--cream);
+      font-style: italic;
+    }
+
+    /* ── Cards ── */
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 680px) {
+      .team-grid { grid-template-columns: 1fr; }
+    }
+
+    .team-card {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      cursor: pointer;
+    }
+
+    .team-card-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      filter: grayscale(20%);
+    }
+
+    .team-card:hover .team-card-img {
+      transform: scale(1.06);
+      filter: grayscale(0%);
+    }
+
+    /* Dark overlay */
+    .team-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 40%,
+        rgba(17, 16, 9, 0.85) 100%
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Gold line accent */
+    .team-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--gold);
+      z-index: 3;
+      transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .team-card:hover::after {
+      width: 100%;
+    }
+
+    .team-card-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 2.5rem 2rem 2rem;
+      z-index: 2;
+      transform: translateY(0);
+    }
+
+    .team-card-role {
+      display: block;
+      font-size: 0.6rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+      transition: opacity 0.4s ease;
+    }
+
+    .team-card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1;
+      display: block;
+      margin-bottom: 0.8rem;
+    }
+
+    .team-card-bio {
+      font-size: 0.72rem;
+      line-height: 1.7;
+      color: rgba(245, 240, 232, 0.65);
+      max-width: 32ch;
+      height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: height 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  opacity 0.4s ease 0.1s;
+      letter-spacing: 0.03em;
+    }
+
+    .team-card:hover .team-card-bio {
+      height: 4.5em;
+      opacity: 1;
+    }
+
+    /* Contact link */
+    .team-card-contact {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      text-decoration: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.4s ease 0.15s, transform 0.4s ease 0.15s;
+    }
+
+    .team-card:hover .team-card-contact {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .team-card-contact svg {
+      transition: transform 0.3s ease;
+    }
+
+    .team-card-contact:hover svg {
+      transform: translateX(4px);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+      margin: 80px auto 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Intro placeholder -->
+  <section class="intro-section">
+    <p>Scroll para descobrir</p>
+  </section>
+
+  <!-- SVG Clip Path — texto "A nossa / Equipa" convertido em paths (objectBoundingBox 0..1) -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" id="clipContainer">
+    <clipPath id="clip-path1" clipPathUnits="objectBoundingBox">
+      <path id="logoPath" d="M 0.082054 0.322703 H 0.145143 L 0.129531 0.203159 Z M 0.021397 0.413793 0.023700 0.395946 H 0.038800 L 0.131067 0.162412 H 0.150518 L 0.180847 0.395946 H 0.197739 L 0.195435 0.413793 H 0.132858 L 0.135162 0.395946 H 0.154357 L 0.147319 0.340719 H 0.074888 L 0.053261 0.395946 H 0.072073 L 0.069769 0.413793 Z M 0.301010 0.413793 0.322509 0.252829 H 0.302162 L 0.304594 0.234813 H 0.346056 L 0.341833 0.266635 Q 0.350151 0.248451 0.360772 0.239190 Q 0.371394 0.229930 0.383807 0.229930 Q 0.404026 0.229930 0.411320 0.246936 Q 0.415799 0.257206 0.415799 0.274380 Q 0.415799 0.285661 0.413880 0.299973 L 0.401083 0.395946 H 0.420022 L 0.417591 0.413793 H 0.377408 L 0.391229 0.309739 Q 0.393532 0.292396 0.393532 0.280779 Q 0.393532 0.270508 0.391741 0.264615 Q 0.387774 0.252492 0.373825 0.252492 Q 0.359109 0.252492 0.349319 0.268235 Q 0.339529 0.283978 0.335562 0.314116 L 0.322253 0.413793 Z M 0.497060 0.402007 Q 0.514080 0.402007 0.525405 0.382307 Q 0.536731 0.362608 0.541849 0.324219 Q 0.544153 0.306708 0.544153 0.293070 Q 0.544153 0.276906 0.540826 0.266298 Q 0.534683 0.246599 0.517663 0.246599 Q 0.500643 0.246599 0.489318 0.266214 Q 0.477992 0.285830 0.472874 0.324219 Q 0.470570 0.341730 0.470570 0.355199 Q 0.470570 0.371532 0.473897 0.382307 Q 0.480040 0.402007 0.497060 0.402007 Z M 0.494757 0.418676 Q 0.468139 0.418676 0.455342 0.392915 Q 0.446384 0.374899 0.446384 0.348970 Q 0.446384 0.337352 0.448176 0.324219 Q 0.453806 0.281452 0.473450 0.255691 Q 0.493093 0.229930 0.519903 0.229930 Q 0.546712 0.229930 0.559509 0.255691 Q 0.568339 0.273539 0.568339 0.299468 Q 0.568339 0.311086 0.566548 0.324219 Q 0.560917 0.366985 0.541274 0.392831 Q 0.521630 0.418676 0.494757 0.418676 Z M 0.586511 0.362103 H 0.598668 Q 0.598284 0.366985 0.598284 0.371363 Q 0.598284 0.402007 0.626693 0.402007 Q 0.655231 0.402007 0.659454 0.371363 Q 0.659709 0.368332 0.659709 0.362945 Q 0.659709 0.357725 0.655806 0.351411 Q 0.651903 0.345097 0.635395 0.336847 L 0.621063 0.329270 Q 0.606346 0.321862 0.601547 0.312348 Q 0.596748 0.302835 0.596748 0.291891 Q 0.596748 0.287513 0.597260 0.282462 Q 0.600715 0.257880 0.614856 0.243905 Q 0.628997 0.229930 0.649472 0.229930 Q 0.669947 0.229930 0.691318 0.244410 L 0.686071 0.283473 H 0.673914 Q 0.674426 0.279600 0.674426 0.276232 Q 0.674426 0.263941 0.668603 0.255270 Q 0.662781 0.246599 0.649216 0.246599 Q 0.622214 0.246599 0.618503 0.274212 Q 0.617991 0.277074 0.617991 0.282126 Q 0.617991 0.287345 0.621766 0.293238 Q 0.625542 0.299131 0.640130 0.306203 L 0.655998 0.313780 Q 0.672251 0.321693 0.678393 0.333648 Q 0.682616 0.342066 0.682616 0.350317 Q 0.682616 0.385675 0.663293 0.404027 Q 0.648064 0.418676 0.624838 0.418676 Q 0.601611 0.418676 0.581008 0.403859 Z M 0.707442 0.362103 H 0.719599 Q 0.719215 0.366985 0.719215 0.371363 Q 0.719215 0.402007 0.747625 0.402007 Q 0.776162 0.402007 0.780385 0.371363 Q 0.780641 0.368332 0.780641 0.362945 Q 0.780641 0.357725 0.776738 0.351411 Q 0.772835 0.345097 0.756327 0.336847 L 0.741994 0.329270 Q 0.727277 0.321862 0.722479 0.312348 Q 0.717680 0.302835 0.717680 0.291891 Q 0.717680 0.287513 0.718192 0.282462 Q 0.721647 0.257880 0.735787 0.243905 Q 0.749928 0.229930 0.770403 0.229930 Q 0.790878 0.229930 0.812249 0.244410 L 0.807003 0.283473 H 0.794846 Q 0.795357 0.279600 0.795357 0.276232 Q 0.795357 0.263941 0.789535 0.255270 Q 0.783712 0.246599 0.770147 0.246599 Q 0.743146 0.246599 0.739435 0.274212 Q 0.738923 0.277074 0.738923 0.282126 Q 0.738923 0.287345 0.742698 0.293238 Q 0.746473 0.299131 0.761061 0.306203 L 0.776930 0.313780 Q 0.793182 0.321693 0.799324 0.333648 Q 0.803547 0.342066 0.803547 0.350317 Q 0.803547 0.385675 0.784224 0.404027 Q 0.768996 0.418676 0.745769 0.418676 Q 0.722543 0.418676 0.701939 0.403859 Z M 0.905923 0.385843 Q 0.890439 0.418676 0.865869 0.418676 Q 0.845522 0.418676 0.835284 0.398640 Q 0.828118 0.384496 0.828118 0.364291 Q 0.828118 0.355704 0.829397 0.346107 Q 0.837331 0.286672 0.865485 0.256028 Q 0.889671 0.229930 0.918720 0.229930 Q 0.938300 0.229930 0.945082 0.234813 L 0.923583 0.395946 H 0.941883 L 0.939451 0.413793 H 0.902212 Z M 0.850512 0.363281 Q 0.850512 0.399313 0.874315 0.399313 Q 0.888775 0.399313 0.898693 0.382392 Q 0.908611 0.365470 0.912834 0.333143 L 0.923711 0.251987 Q 0.923711 0.247104 0.914369 0.247104 Q 0.892358 0.247104 0.875083 0.272360 Q 0.858063 0.297784 0.851920 0.343918 Q 0.850512 0.354694 0.850512 0.363281 Z M 0.075592 0.827586 0.078023 0.809739 H 0.099906 L 0.128571 0.594221 H 0.106688 L 0.108992 0.576206 H 0.247455 L 0.240033 0.632105 H 0.225828 L 0.230563 0.596915 H 0.151478 L 0.140344 0.681102 H 0.196651 L 0.200874 0.649616 H 0.215079 L 0.203945 0.733129 H 0.189741 L 0.193964 0.701643 H 0.137657 L 0.123580 0.806876 H 0.204457 L 0.209192 0.771686 H 0.223269 L 0.215847 0.827586 Z M 0.350215 0.799636 Q 0.342281 0.816474 0.332555 0.824555 Q 0.322957 0.832469 0.310160 0.832469 Q 0.289941 0.832469 0.279575 0.812433 Q 0.273177 0.799805 0.272537 0.782294 Q 0.272025 0.772023 0.273689 0.759900 Q 0.281623 0.700465 0.309776 0.669821 Q 0.333835 0.643891 0.362116 0.643723 Q 0.384383 0.643555 0.391421 0.648606 L 0.360452 0.881466 H 0.380799 L 0.378496 0.899313 H 0.336906 Z M 0.358789 0.660897 Q 0.336650 0.660897 0.319502 0.686153 Q 0.302482 0.711577 0.296212 0.757711 Q 0.294548 0.771350 0.294932 0.781620 Q 0.295444 0.792060 0.298259 0.799131 Q 0.303890 0.813106 0.318606 0.813106 Q 0.333195 0.813106 0.343048 0.796185 Q 0.352902 0.779263 0.357125 0.746936 L 0.368003 0.665780 Q 0.368130 0.660897 0.358789 0.660897 Z M 0.516319 0.648606 H 0.537562 L 0.516063 0.809739 H 0.536155 L 0.533723 0.827586 H 0.492517 L 0.496740 0.795932 Q 0.488422 0.813780 0.477865 0.823124 Q 0.467307 0.832469 0.455022 0.832469 Q 0.434675 0.832469 0.427252 0.815463 Q 0.422774 0.805361 0.422774 0.788019 Q 0.422774 0.776738 0.424693 0.762426 L 0.437490 0.666622 H 0.418295 L 0.420726 0.648606 H 0.461164 L 0.447344 0.752829 Q 0.445040 0.770171 0.445040 0.781620 Q 0.445040 0.791891 0.446832 0.797616 Q 0.450671 0.809739 0.464748 0.809739 Q 0.479464 0.809739 0.489254 0.793912 Q 0.499044 0.778085 0.503139 0.747946 Z M 0.591310 0.593043 Q 0.592333 0.585298 0.596940 0.579573 Q 0.601547 0.573848 0.607050 0.573848 Q 0.612297 0.573848 0.615368 0.579573 Q 0.617671 0.583951 0.617671 0.589339 Q 0.617671 0.591191 0.617415 0.593043 Q 0.616392 0.600956 0.611849 0.606513 Q 0.607306 0.612069 0.601931 0.612069 Q 0.596556 0.612069 0.593357 0.606513 Q 0.591054 0.602303 0.591054 0.596915 Q 0.591054 0.595063 0.591310 0.593043 Z M 0.589518 0.809739 H 0.609609 L 0.607178 0.827586 H 0.565972 L 0.587343 0.666622 H 0.567123 L 0.569555 0.648606 H 0.611017 Z M 0.683448 0.729256 0.681144 0.746936 Q 0.679353 0.760237 0.679353 0.770845 Q 0.679353 0.786166 0.683064 0.796269 Q 0.689207 0.813106 0.705331 0.813106 Q 0.721583 0.813106 0.732460 0.794080 Q 0.743338 0.775054 0.748329 0.738012 Q 0.750504 0.721006 0.750504 0.707705 Q 0.750504 0.692214 0.747433 0.681944 Q 0.741546 0.663086 0.725294 0.663086 Q 0.709170 0.663086 0.698420 0.680092 Q 0.687671 0.697097 0.683448 0.729256 Z M 0.670523 0.666622 H 0.650176 L 0.652607 0.648606 H 0.694197 L 0.690486 0.676556 Q 0.698932 0.659718 0.709618 0.651721 Q 0.720303 0.643723 0.734380 0.643723 Q 0.757030 0.643723 0.767780 0.669821 Q 0.774946 0.686995 0.774946 0.711072 Q 0.774946 0.723700 0.773027 0.738012 Q 0.767396 0.780105 0.749672 0.806287 Q 0.731948 0.832469 0.709298 0.832469 Q 0.695221 0.832469 0.686647 0.824471 Q 0.678073 0.816474 0.674106 0.799636 L 0.660797 0.899313 H 0.639682 Z M 0.866061 0.799636 Q 0.850576 0.832469 0.826006 0.832469 Q 0.805659 0.832469 0.795421 0.812433 Q 0.788255 0.798289 0.788255 0.778085 Q 0.788255 0.769498 0.789535 0.759900 Q 0.797469 0.700465 0.825622 0.669821 Q 0.849808 0.643723 0.878858 0.643723 Q 0.898437 0.643723 0.905219 0.648606 L 0.883720 0.809739 H 0.902020 L 0.899589 0.827586 H 0.862350 Z M 0.810650 0.777074 Q 0.810650 0.813106 0.834452 0.813106 Q 0.848913 0.813106 0.858830 0.796185 Q 0.868748 0.779263 0.872971 0.746936 L 0.883848 0.665780 Q 0.883848 0.660897 0.874507 0.660897 Q 0.852496 0.660897 0.835220 0.686153 Q 0.818200 0.711577 0.812057 0.757711 Q 0.810650 0.768487 0.810650 0.777074 Z" />
+    </clipPath>
+  </svg>
+
+  <!-- HERO SECTION with clip-path zoom reveal -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <!-- Swirl background -->
+      <svg class="hero-bg-svg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="swirlGradient" cx="50%" cy="50%" r="80%">
+            <stop offset="0%" stop-color="#c9a96e" />
+            <stop offset="45%" stop-color="#7a6a4a" />
+            <stop offset="100%" stop-color="#111009" />
+          </radialGradient>
+          <filter id="swirl" x="0" y="0">
+            <feTurbulence type="turbulence" baseFrequency="0.012 0.018" numOctaves="2" seed="8" result="turb" />
+            <feDisplacementMap in2="turb" in="SourceGraphic" scale="120" xChannelSelector="R" yChannelSelector="G" />
+          </filter>
+        </defs>
+        <circle cx="600" cy="450" r="800" fill="url(#swirlGradient)" filter="url(#swirl)" />
+      </svg>
+
+      <div class="hero-content">
+        <span class="hero-eyebrow">Satus Imobiliária · Cascais & Estoril</span>
+        <h1 class="hero-title">
+          Sobre<br>a <em>Equipa</em>
+        </h1>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEAM SECTION -->
+  <section class="team-section">
+    <div class="team-header">
+      <span class="team-label">Os nossos especialistas</span>
+      <h2>Experiência. Confiança. Resultados.</h2>
+    </div>
+
+    <div class="team-grid">
+
+      <!-- Afonso Lucas -->
+      <div class="team-card">
+        <img
+          class="team-card-img"
+          src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=80&auto=format&fit=crop"
+          alt="Afonso Lucas"
+        />
+        <div class="team-card-info">
+          <span class="team-card-role">Consultor Imobiliário</span>
+          <span class="team-card-name">Afonso Lucas</span>
+          <p class="team-card-bio">Especialista no mercado de luxo de Cascais e Estoril, com uma abordagem discreta e personalizada para cada cliente.</p>
+          <a class="team-card-contact" href="mailto:afonso@satus.pt">
+            Contactar
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Carolina Cunha -->
+      <div class="team-card">
+        <img
+          class="team-card-img"
+          src="https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?w=800&q=80&auto=format&fit=crop"
+          alt="Carolina Cunha"
+        />
+        <div class="team-card-info">
+          <span class="team-card-role">Consultora Imobiliária</span>
+          <span class="team-card-name">Carolina Cunha</span>
+          <p class="team-card-bio">Com vasta experiência em habitação premium na linha de Cascais, guia os seus clientes com rigor e atenção ao detalhe.</p>
+          <a class="team-card-contact" href="mailto:carolina@satus.pt">
+            Contactar
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+  </section>
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const container = document.querySelector(".hero-container");
+    let heightRatio = window.innerWidth / window.innerHeight;
+    const logoPath = document.getElementById("logoPath");
+
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".hero-section",
+        start: "top top",
+        end: "+=200%",
+        pin: true,
+        scrub: true,
+        invalidateOnRefresh: true
+      }
+    })
+    .fromTo(
+      [".hero-bg-svg", ".hero-content"],
+      { autoAlpha: 0 },
+      { autoAlpha: 1 }
+    )
+    .fromTo(
+      logoPath,
+      {
+        scaleX: 0.25,
+        scaleY: () => 0.25 * heightRatio,
+        x: 0,
+        transformOrigin: "center center"
+      },
+      {
+        scaleX: 21,
+        scaleY: () => 21 * heightRatio,
+        x: -1.45,
+        transformOrigin: "center center",
+        duration: 1,
+        ease: "power2.in"
+      }
+    )
+    .to({}, { duration: 0.25 });
+
+    window.addEventListener("resize", () => {
+      heightRatio = window.innerWidth / window.innerHeight;
+    });
+
+    // Animate team cards on scroll
+    gsap.fromTo(".team-card", 
+      { opacity: 0, y: 60 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1.2,
+        stagger: 0.2,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".team-grid",
+          start: "top 80%",
+        }
+      }
+    );
+
+    gsap.fromTo(".team-header",
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ".team-header",
+          start: "top 85%",
+        }
+      }
+    );
+  </script>
+</body>
+</html>

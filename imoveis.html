@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Todos os Imóveis — Satus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F5F1EB;--warm-white:#FDFAF6;--ink:#1C1917;--ink-soft:#44403C;--gold:#1C1917;--gold-light:rgba(255,255,255,0.85);--border:rgba(28,25,23,0.1);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{overflow-x:hidden;scroll-behavior:smooth;}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--ink);}
+nav{position:static;display:flex;align-items:center;justify-content:space-between;padding:18px 52px;background:rgba(245,241,235,0.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--ink);text-decoration:none;display:flex;flex-direction:column;line-height:1.2;}
+.logo-sub{font-size:9px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);}
+.nav-back{font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none;transition:color .2s;}
+.nav-back:hover{color:var(--gold);}
+.page-hero{padding:72px 52px 52px;background:var(--ink);text-align:center;}
+.page-eyebrow{font-size:10px;font-weight:400;letter-spacing:.24em;text-transform:uppercase;color:rgba(245,241,235,.38);margin-bottom:14px;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,5vw,64px);font-weight:400;color:var(--cream);line-height:1.1;}
+.page-title em{font-style:italic;color:var(--gold-light);}
+.page-sub{font-size:13px;color:rgba(245,241,235,.4);margin-top:10px;letter-spacing:.06em;}
+.filters{display:flex;align-items:center;justify-content:center;gap:10px;padding:24px 52px;background:var(--warm-white);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.fbtn{padding:8px 20px;border:1px solid var(--border);background:transparent;color:var(--ink-soft);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.fbtn:hover,.fbtn.active{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+.container{padding:48px 52px;max-width:1400px;margin:0 auto;}
+.count{font-size:12px;color:var(--ink-soft);margin-bottom:28px;letter-spacing:.06em;}
+.count span{color:var(--gold);font-weight:500;}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.card{background:var(--warm-white);cursor:pointer;overflow:hidden;border:1px solid var(--border);box-shadow:0 2px 20px rgba(28,25,23,.05);transition:transform .35s ease,box-shadow .35s ease,border-color .35s ease;position:relative;text-decoration:none;color:inherit;display:block;}
+.card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(28,25,23,.13);border-color:rgba(160,132,92,.4);}
+.card-img{height:250px;background-size:cover;background-position:center;position:relative;overflow:hidden;transition:transform .6s ease;}
+.badge{position:absolute;top:0;left:0;font-size:9px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;padding:7px 14px;background:var(--gold);color:white;z-index:1;}
+.badge.excl{background:var(--ink);}
+.badge.sold{background:#6b7280;}
+.card:hover .card-img{transform:scale(1.05);}.sold-ov{position:absolute;inset:0;background:rgba(28,25,23,.5);display:flex;align-items:center;justify-content:center;z-index:2;}
+.sold-ov span{border:1.5px solid rgba(245,241,235,.6);padding:7px 20px;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:rgba(245,241,235,.85);letter-spacing:.1em;}
+.body{padding:22px;}
+.price{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;margin-bottom:5px;}
+.ctitle{font-size:13px;font-weight:500;margin-bottom:4px;line-height:1.4;}
+.loc{font-size:11px;color:var(--ink-soft);margin-bottom:14px;display:flex;align-items:center;gap:5px;letter-spacing:.02em;}
+.loc::before{content:'◎';color:var(--gold);font-size:9px;}
+.meta{display:flex;gap:14px;padding-top:12px;border-top:1px solid var(--border);font-size:11px;color:var(--ink-soft);flex-wrap:wrap;}
+.cta{margin-top:12px;font-size:10px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);display:inline-flex;align-items:center;gap:5px;transition:gap .25s;}.card:hover .cta{gap:10px;}
+.cta-sold{color:#6b7280;}
+.cta-section{background:var(--ink);padding:64px 52px;text-align:center;}
+.cta-section h2{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,44px);font-weight:400;color:var(--cream);margin-bottom:8px;}
+.cta-section h2 em{font-style:italic;color:var(--gold-light);}
+.cta-section p{font-size:13px;color:rgba(245,241,235,.4);margin-bottom:28px;}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.cta-dark{padding:13px 32px;background:var(--gold);color:white;text-decoration:none;font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;transition:background .25s;}
+.cta-dark:hover{background:rgba(160,132,92,.8);}
+.cta-ghost{padding:13px 32px;background:transparent;color:var(--cream);border:1px solid rgba(245,241,235,.2);text-decoration:none;font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;transition:all .25s;}
+.cta-ghost:hover{border-color:var(--gold-light);color:var(--gold-light);}
+footer{background:#0F0E0C;color:rgba(245,241,235,.4);padding:26px 52px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.f-logo{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--cream);}
+.hidden{display:none!important;}
+/* Empreendimentos */
+.emp-section{padding:0 52px 52px;max-width:1400px;margin:0 auto;}
+.emp-divider{display:flex;align-items:center;gap:20px;margin-bottom:36px;padding-top:16px;}
+.emp-divider-line{flex:1;height:1px;background:var(--border);}
+.emp-divider-label{display:flex;align-items:center;gap:10px;white-space:nowrap;}
+.emp-divider-icon{width:32px;height:32px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.emp-divider-text{font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-soft);}
+.emp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.emp-card{background:var(--ink);overflow:hidden;text-decoration:none;color:inherit;display:block;transition:transform .3s;}
+.emp-card:hover{transform:translateY(-4px);}
+.emp-card-img{height:220px;background-size:cover;background-position:center;position:relative;}
+.emp-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(28,25,23,.85));}
+.emp-status{position:absolute;top:14px;left:14px;font-size:9px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;padding:5px 12px;z-index:1;}
+.emp-status.construction{background:var(--gold);color:white;}
+.emp-status.presale{background:#2D6A4F;color:white;}
+.emp-status.launch{background:#9B2335;color:white;}
+.emp-body{padding:22px;}
+.emp-price{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--gold-light);margin-bottom:5px;}
+.emp-title{font-size:13px;font-weight:500;color:var(--cream);margin-bottom:4px;}
+.emp-loc{font-size:12px;color:rgba(245,241,235,.45);margin-bottom:16px;display:flex;align-items:center;gap:5px;}
+.emp-loc::before{content:'◎';color:var(--gold);font-size:9px;}
+.emp-progress{margin-bottom:14px;}
+.emp-progress-label{display:flex;justify-content:space-between;font-size:10px;color:rgba(245,241,235,.45);margin-bottom:6px;letter-spacing:.04em;}
+.emp-progress-bar{height:3px;background:rgba(245,241,235,.1);border-radius:0;}
+.emp-progress-fill{height:3px;background:var(--gold);transition:width .6s ease;}
+.emp-meta{display:flex;gap:14px;padding-top:14px;border-top:1px solid rgba(245,241,235,.1);font-size:11px;color:rgba(245,241,235,.45);flex-wrap:wrap;}
+.emp-cta{margin-top:12px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-light);}
+@media(max-width:1024px){.emp-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.emp-section{padding:0 18px 40px;}.emp-grid{grid-template-columns:1fr;}}
+@media(max-width:1024px){.grid{grid-template-columns:repeat(2,1fr);}}
+.lang-btn{padding:7px 12px;border:1px solid var(--border);background:transparent;color:var(--ink-soft);font-family:'Outfit',sans-serif;font-size:11px;font-weight:500;letter-spacing:.1em;cursor:pointer;transition:all .25s;margin-right:6px;}
+.lang-btn:hover{color:var(--gold);}
+@media(max-width:768px){nav{padding:13px 18px;}.page-hero{padding:52px 18px 36px;}.filters{padding:18px;}.container{padding:28px 18px;}.grid{grid-template-columns:1fr;}.cta-section{padding:48px 18px;}footer{padding:20px 18px;flex-direction:column;text-align:center;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo" style="flex-direction:row;align-items:center;gap:12px;text-decoration:none;">
+    <img src="SATUS_Refined_Wordmark_Logo-removebg-preview.png" alt="Satus" style="height:28px;width:auto;filter:brightness(0);opacity:.85;">
+  </a>
+  <a href="index.html" class="nav-back" data-en="← Home">← Início</a>
+  <button class="lang-btn" onclick="toggleLang()" title="Switch to English">EN</button>
+</nav>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Cascais · Estoril · Lisboa</div>
+  <h1 class="page-title" data-en-html="All <em>Properties</em>">Todos os <em>Imóveis</em></h1>
+  <div class="page-sub" data-en="9 properties · Updated March 2025">9 propriedades · Atualizado Março 2025</div>
+</div>
+
+<div class="filters">
+  <input type="text" id="s-text" placeholder="Pesquise por zona ou tipologia..." data-en-ph="Search by area or type..." oninput="doSearch()"
+    style="padding:8px 16px;border:1px solid var(--border);background:white;font-family:'Outfit',sans-serif;font-size:12px;color:var(--ink);outline:none;min-width:220px;transition:border-color .2s;"
+    onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--border)'">
+  <select id="s-zona" onchange="doSearch()" style="padding:8px 14px;border:1px solid var(--border);background:white;font-family:'Outfit',sans-serif;font-size:12px;color:var(--ink-soft);outline:none;cursor:pointer;">
+    <option value="" data-en="Area">Zona</option>
+    <option value="cascais">Cascais</option>
+    <option value="estoril">Estoril</option>
+    <option value="sintra">Sintra</option>
+    <option value="parede">Parede</option>
+  </select>
+  <select id="s-tipo" onchange="doSearch()" style="padding:8px 14px;border:1px solid var(--border);background:white;font-family:'Outfit',sans-serif;font-size:12px;color:var(--ink-soft);outline:none;cursor:pointer;">
+    <option value="" data-en="Type">Tipologia</option>
+    <option value="t1">T1</option>
+    <option value="t2">T2</option>
+    <option value="t3">T3</option>
+    <option value="t4">T4+</option>
+    <option value="moradia" data-en="Villa">Moradia</option>
+    <option value="penthouse">Penthouse</option>
+    <option value="t5">T5</option>
+  </select>
+  <select id="s-preco" onchange="doSearch()" style="padding:8px 14px;border:1px solid var(--border);background:white;font-family:'Outfit',sans-serif;font-size:12px;color:var(--ink-soft);outline:none;cursor:pointer;">
+    <option value="" data-en="Max Price">Preço Máximo</option>
+    <option value="500000">€500K</option>
+    <option value="800000">€800K</option>
+    <option value="1000000">€1M</option>
+    <option value="1500000">€1.5M</option>
+    <option value="3000000">€3M+</option>
+  </select>
+  <button class="fbtn active" onclick="resetSearch(this)" data-en="All">Todos</button>
+  <button class="fbtn" onclick="filterTag('excl',this)" data-en="Exclusive">Exclusivos</button>
+  <button class="fbtn" onclick="filterEmp(this)" data-en="Developments">Empreendimentos</button>
+  <button class="fbtn" onclick="filterTag('sold',this)" data-en="Sold">Vendidos</button>
+</div>
+
+<div class="container">
+  <div class="count"><span data-en="Showing">A mostrar</span> <span id="cnt">9</span> <span data-en="properties">imóveis</span></div>
+  <div class="grid" id="grid">
+
+    <a href="casa1.html" class="card" data-zona="cascais" data-tipo="t3" data-preco="710000" data-tags="disp excl" data-titulo="jardins parede são pedro estoril">
+      <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=700&q=80')">
+        <div class="badge excl" data-en="Exclusive">Exclusivo</div>
+      </div>
+      <div class="body">
+        <div class="price">€710.000</div>
+        <div class="ctitle">Jardins da Parede | T3 com Terraço</div>
+        <div class="loc">São Pedro do Estoril, Cascais</div>
+        <div class="meta"><span>🛏 T3</span><span>📐 151m²</span><span>🅿️ Garagem</span></div>
+        <div class="cta" data-en="View property →">Ver imóvel →</div>
+      </div>
+    </a>
+
+    <a href="casa2.html" class="card" data-zona="estoril" data-tipo="t3" data-preco="0" data-tags="disp" data-titulo="condomínio fechado amoreira estoril">
+      <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=80')">
+        <div class="badge" data-en="Available">Disponível</div>
+      </div>
+      <div class="body">
+        <div class="price" data-en="Price on request">Preço sob consulta</div>
+        <div class="ctitle">T3 em Condomínio Fechado</div>
+        <div class="loc">Amoreira, Estoril</div>
+        <div class="meta"><span>🛏 T3</span><span>🔒 Cond. Fechado</span><span>🌿 Jardim</span></div>
+        <div class="cta" data-en="View property →">Ver imóvel →</div>
+      </div>
+    </a>
+
+    <a href="casa3.html" class="card" data-zona="estoril" data-tipo="t4" data-preco="0" data-tags="disp excl" data-titulo="moradia vista mar tamariz estoril">
+      <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1613977257363-707ba9348227?w=700&q=80')">
+        <div class="badge excl" data-en="Sea View">Vista Mar</div>
+      </div>
+      <div class="body">
+        <div class="price" data-en="Price on request">Preço sob consulta</div>
+        <div class="ctitle">Moradia T4 Vista Mar — Tamariz</div>
+        <div class="loc">Estoril, Cascais</div>
+        <div class="meta"><span>🛏 T4</span><span>🌊 Vista mar</span><span>📍 Junto ao Casino</span></div>
+        <div class="cta" data-en="View property →">Ver imóvel →</div>
+      </div>
+    </a>
+
+    <a href="casa4.html" class="card" data-zona="cascais" data-tipo="t4" data-preco="895000" data-tags="sold" data-titulo="moradia cascais vila">
+      <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=700&q=80');filter:grayscale(.35)">
+        <div class="badge sold" data-en="Sold">Vendido</div>
+        <div class="sold-ov"><span data-en="SOLD">VENDIDO</span></div>
+      </div>
+      <div class="body">
+        <div class="price" style="text-decoration:line-through;color:var(--ink-soft)">€895.000</div>
+        <div class="ctitle">Moradia de Charme — Cascais Vila</div>
+        <div class="loc">Cascais Vila, Cascais</div>
+        <div class="meta"><span>🛏 T4</span><span>🚿 3 WC</span><span>📐 240m²</span></div>
+        <div class="cta cta-sold" data-en="Deal closed">Negócio concluído</div>
+      </div>
+    </a>
+
+    <a href="casa5.html" class="card" data-zona="estoril" data-tipo="penthouse" data-preco="1350000" data-tags="disp excl" data-titulo="penthouse piscina monte estoril">
+      <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80')">
+        <div class="badge excl">Penthouse</div>
+      </div>
+      <div class="body">
+        <div class="price">€1.350.000</div>
+        <div class="ctitle">Penthouse com Piscina Privada</div>
+        <div class="loc">Monte Estoril, Cascais</div>
+        <div class="meta"><span>🛏 T3+1</span><span>🏊 Piscina</span><span>📐 310m²</span></div>
+        <div class="cta" data-en="View property →">Ver imóvel →</div>
+      </div>
+    </a>
+
+    <a href="casa6.html" class="card" data-zona="estoril" data-tipo="t5" data-preco="2100000" data-tags="disp" data-titulo="villa luxo frente mar são joão estoril">
+      <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=80')">
+        <div class="badge">Premium</div>
+      </div>
+      <div class="body">
+        <div class="price">€2.100.000</div>
+        <div class="ctitle">Villa de Luxo — Frente Mar</div>
+        <div class="loc">São João do Estoril, Cascais</div>
+        <div class="meta"><span>🛏 T5</span><span>🌊 Frente-mar</span><span>📐 480m²</span></div>
+        <div class="cta" data-en="View property →">Ver imóvel →</div>
+      </div>
+    </a>
+
+    <a href="casa2.html" class="card" data-zona="cascais" data-tipo="t2" data-preco="620000" data-tags="disp" data-titulo="apartamento t2 parede cascais">
+      <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=80')">
+        <div class="badge" data-en="Available">Disponível</div>
+      </div>
+      <div class="body">
+        <div class="price">€620.000</div>
+        <div class="ctitle">Apartamento T2 — Linha de Cascais</div>
+        <div class="loc">Parede, Cascais</div>
+        <div class="meta"><span>🛏 T2</span><span>📐 98m²</span><span>🌊 Vista mar</span></div>
+        <div class="cta" data-en="View property →">Ver imóvel →</div>
+      </div>
+    </a>
+
+    <a href="casa3.html" class="card" data-zona="sintra" data-tipo="moradia" data-preco="1750000" data-tags="disp" data-titulo="quinta piscina sintra">
+      <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=80')">
+        <div class="badge" data-en="Available">Disponível</div>
+      </div>
+      <div class="body">
+        <div class="price">€1.750.000</div>
+        <div class="ctitle">Quinta com Piscina — Sintra</div>
+        <div class="loc">São Pedro de Sintra, Sintra</div>
+        <div class="meta"><span>🛏 T5</span><span>📐 420m²</span><span>🌿 5000m² jardim</span></div>
+        <div class="cta" data-en="View property →">Ver imóvel →</div>
+      </div>
+    </a>
+
+    <a href="casa5.html" class="card" data-zona="estoril" data-tipo="t1" data-preco="480000" data-tags="disp" data-titulo="apartamento t1+1 estoril">
+      <div class="card-img" style="background-image:url('https://images.unsplash.com/photo-1567767292278-a4f21aa2d36e?w=700&q=80')">
+        <div class="badge" data-en="New">Novo</div>
+      </div>
+      <div class="body">
+        <div class="price">€480.000</div>
+        <div class="ctitle">Apartamento T1+1 — Estoril</div>
+        <div class="loc">Estoril, Cascais</div>
+        <div class="meta"><span>🛏 T1+1</span><span>📐 75m²</span><span>🅿️ Garagem</span></div>
+        <div class="cta" data-en="View property →">Ver imóvel →</div>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<div class="emp-section" id="emp-section">
+  <div class="emp-divider">
+    <div class="emp-divider-line"></div>
+    <div class="emp-divider-label">
+      <div class="emp-divider-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><rect x="2" y="7" width="20" height="15" rx="1"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+      </div>
+      <div class="emp-divider-text" data-en="Developments · Under Construction &amp; Pre-sale">Empreendimentos · Em construção & Pré-venda</div>
+    </div>
+    <div class="emp-divider-line"></div>
+  </div>
+
+  <div class="emp-grid">
+
+    <!-- Empreendimento 1 -->
+    <div class="emp-card">
+      <div class="emp-card-img" style="background-image:url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=700&q=80')">
+        <div class="emp-status construction" data-en="Under Construction">Em Construção</div>
+      </div>
+      <div class="emp-body">
+        <div class="emp-price">Desde €380.000</div>
+        <div class="emp-title">Residências Atlântico — Cascais</div>
+        <div class="emp-loc">Cascais, Cascais</div>
+        <div class="emp-progress">
+          <div class="emp-progress-label"><span data-en="Works">Obra</span><span data-en="65% complete">65% concluída</span></div>
+          <div class="emp-progress-bar"><div class="emp-progress-fill" style="width:65%"></div></div>
+        </div>
+        <div class="emp-meta"><span>🏗️ Entrega: Q4 2025</span><span>🏢 24 fracções</span><span>🅿️ Garagem</span></div>
+        <div class="emp-cta" data-en="Learn more →">Saber mais →</div>
+      </div>
+    </div>
+
+    <!-- Empreendimento 2 -->
+    <div class="emp-card">
+      <div class="emp-card-img" style="background-image:url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=700&q=80')">
+        <div class="emp-status presale" data-en="Pre-Sale">Pré-Venda</div>
+      </div>
+      <div class="emp-body">
+        <div class="emp-price">Desde €520.000</div>
+        <div class="emp-title">Estoril Prime Residences</div>
+        <div class="emp-loc">Monte Estoril, Cascais</div>
+        <div class="emp-progress">
+          <div class="emp-progress-label"><span data-en="Works">Obra</span><span data-en="20% complete">20% concluída</span></div>
+          <div class="emp-progress-bar"><div class="emp-progress-fill" style="width:20%"></div></div>
+        </div>
+        <div class="emp-meta"><span>🏗️ Entrega: Q2 2026</span><span>🏢 12 fracções</span><span>🌊 Vista mar</span></div>
+        <div class="emp-cta" data-en="Learn more →">Saber mais →</div>
+      </div>
+    </div>
+
+    <!-- Empreendimento 3 -->
+    <div class="emp-card">
+      <div class="emp-card-img" style="background-image:url('https://images.unsplash.com/photo-1460317442991-0ec209397118?w=700&q=80')">
+        <div class="emp-status launch" data-en="Coming Soon">Lançamento Breve</div>
+      </div>
+      <div class="emp-body">
+        <div class="emp-price" data-en="Price on request">Preço sob consulta</div>
+        <div class="emp-title">Quinta da Parede — Villas</div>
+        <div class="emp-loc">Parede, Cascais</div>
+        <div class="emp-progress">
+          <div class="emp-progress-label"><span data-en="Project">Projecto</span><span data-en="Approval pending">Aprovação em curso</span></div>
+          <div class="emp-progress-bar"><div class="emp-progress-fill" style="width:10%"></div></div>
+        </div>
+        <div class="emp-meta"><span>🏗️ Entrega: 2027</span><span>🏡 8 villas</span><span>🌿 Privacidade total</span></div>
+        <div class="emp-cta" data-en="Learn more →">Saber mais →</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="cta-section">
+  <h2 data-en-html="Didn't find what you're <em>looking for?</em>">Não encontrou o que <em>procura?</em></h2>
+  <p data-en="Talk to us — we have access to exclusive properties not listed publicly">Fale connosco — temos acesso a imóveis exclusivos não listados publicamente</p>
+  <div class="cta-btns">
+    <a href="tel:+351961732836" class="cta-dark" data-en="📞 Call Afonso">📞 Ligar ao Afonso</a>
+    <a href="tel:+351914105989" class="cta-dark" data-en="📞 Call Carolina">📞 Ligar à Carolina</a>
+    <a href="index.html#contact" class="cta-ghost" data-en="Send message">Enviar mensagem</a>
+  </div>
+</div>
+
+<footer>
+  <div class="f-logo" style="display:flex;align-items:center;gap:10px;"><svg width="22" height="22" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="19" stroke="rgba(255,255,255,0.85)" stroke-width="2"/><path d="M12 26 C12 20 16 14 20 12 C24 14 28 20 28 26" stroke="rgba(255,255,255,0.85)" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M15 26 C15 22 17 18 20 16 C23 18 25 22 25 26" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" fill="none" stroke-linecap="round"/><line x1="20" y1="12" x2="20" y2="26" stroke="rgba(255,255,255,0.85)" stroke-width="1.5" stroke-linecap="round"/></svg> Satus Real Estate</div>
+  <div style="font-size:11px;" data-en="© 2025 Satus. Developed by Tomás Sampaio.">© 2025 Satus. Desenvolvido por Tomás Sampaio.</div>
+</footer>
+
+<script>
+// Regions: only used when user types the REGION name (e.g. "lisboa")
+// NOT used when user types a specific zone (e.g. "sintra", "cascais")
+const REGION_KEYS = {
+  'lisboa':        ['cascais','estoril','parede','sintra','oeiras','almada'],
+  'grande lisboa': ['cascais','estoril','parede','sintra','oeiras'],
+  'linha':         ['cascais','estoril','parede'],
+  'algarve':       ['algarve','faro','lagos','albufeira'],
+  'porto':         ['porto','matosinhos','gaia'],
+};
+
+// All known specific zones (not regions)
+const SPECIFIC_ZONES = ['cascais','estoril','parede','sintra','oeiras','almada',
+  'porto','faro','lagos','albufeira','matosinhos','gaia','evora'];
+
+function matchZone(cZona, cTitulo, q) {
+  if (!q) return true;
+  q = q.toLowerCase().trim();
+
+  // Direct match on card's zone or title
+  if (cZona.includes(q) || cTitulo.includes(q)) return true;
+
+  // Only do region expansion if q is NOT a specific zone name
+  const isSpecific = SPECIFIC_ZONES.some(z => z === q || q === z);
+  if (!isSpecific) {
+    // q might be a region name like "lisboa" — expand to all zones in that region
+    for (const [region, zones] of Object.entries(REGION_KEYS)) {
+      if (region === q || region.startsWith(q)) {
+        if (zones.some(z => cZona.includes(z))) return true;
+      }
+    }
+  }
+  return false;
+}
+
+function doSearch() {
+  const text     = (document.getElementById('s-text')?.value  || '').toLowerCase().trim();
+  const zonaVal  = (document.getElementById('s-zona')?.value  || '').toLowerCase();
+  const tipo     = (document.getElementById('s-tipo')?.value  || '').toLowerCase();
+  const precoMax = parseInt(document.getElementById('s-preco')?.value || '0');
+
+  showGrid(true);
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+
+  const cards = document.querySelectorAll('#grid .card');
+  let visible = 0;
+
+  cards.forEach(c => {
+    const cZona  = (c.getAttribute('data-zona')  || '').toLowerCase();
+    const cTipo  = (c.getAttribute('data-tipo')  || '').toLowerCase();
+    const cPreco = parseInt(c.getAttribute('data-preco') || '-1');
+    const cTitulo= (c.getAttribute('data-titulo')|| '').toLowerCase();
+    let show = true;
+
+    if (text && !matchZone(cZona, cTitulo, text) && !cTipo.includes(text)) show = false;
+    if (zonaVal && !cZona.includes(zonaVal)) show = false;
+    if (tipo) {
+      if (tipo === 't4') {
+        if (!['t4','t5','moradia'].includes(cTipo)) show = false;
+      } else {
+        if (cTipo !== tipo) show = false;
+      }
+    }
+    // preco=0 or -1 = sob consulta, never exclude
+    if (precoMax > 0 && cPreco > 0 && cPreco > precoMax) show = false;
+
+    c.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+
+  document.getElementById('cnt').textContent = visible;
+}
+
+function filterTag(tag, btn) {
+  clearInputs();
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showGrid(true);
+  const cards = document.querySelectorAll('#grid .card');
+  let visible = 0;
+  cards.forEach(c => {
+    const tags = c.getAttribute('data-tags') || '';
+    const show = tags.includes(tag);
+    c.classList.toggle('hidden', !show);
+    if (show) visible++;
+  });
+  document.getElementById('cnt').textContent = visible;
+}
+
+function resetSearch(btn) {
+  clearInputs();
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showGrid(true);
+  document.querySelectorAll('#grid .card').forEach(c => c.classList.remove('hidden'));
+  document.getElementById('cnt').textContent = 9;
+}
+
+function filterEmp(btn) {
+  clearInputs();
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  showGrid(false);
+  document.getElementById('cnt').textContent = 3;
+}
+
+function showGrid(show) {
+  const grid = document.getElementById('grid');
+  if (grid) grid.parentElement.style.display = show ? '' : 'none';
+  const emp = document.getElementById('emp-section');
+  if (emp) emp.style.display = show ? 'none' : '';
+}
+
+function clearInputs() {
+  ['s-text','s-zona','s-tipo','s-preco'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const emp = document.getElementById('emp-section');
+  if (emp) emp.style.display = 'none';
+
+  const params = new URLSearchParams(window.location.search);
+  const text  = params.get('text')  || '';
+  const tipo  = params.get('tipo')  || '';
+  const preco = params.get('preco') || '';
+
+  if (text || tipo || preco) {
+    if (text  && document.getElementById('s-text'))  document.getElementById('s-text').value  = text;
+    if (tipo  && document.getElementById('s-tipo'))  document.getElementById('s-tipo').value  = tipo;
+    if (preco && document.getElementById('s-preco')) document.getElementById('s-preco').value = preco;
+    doSearch();
+    setTimeout(() => {
+      const container = document.querySelector('.container');
+      if (container) container.scrollIntoView({behavior:'smooth', block:'start'});
+    }, 100);
+  }
+});
+</script>
+<script src="lang.js"></script>
+</body>
+</html>

@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Satus — Imobiliário de Luxo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<style>
+/* ────────────────────────────────────
+   BASE
+──────────────────────────────────── */
+:root {
+  --ink:   #0d0c0b;
+  --gold:  #A0845C;
+  --cream: #F5F1EB;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body { overflow-x:hidden; background:var(--ink); }
+body { font-family:'DM Sans',sans-serif; }
+
+/* ────────────────────────────────────
+   NAV
+──────────────────────────────────── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:500;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:26px 52px;
+  opacity:0;
+}
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.nav-logo-text {
+  font-family:'Playfair Display',serif; font-size:18px; font-weight:400;
+  letter-spacing:.22em; text-transform:uppercase; color:white;
+}
+.nav-links { display:flex; gap:36px; list-style:none; }
+.nav-links a {
+  font-size:10px; font-weight:400; letter-spacing:.2em; text-transform:uppercase;
+  color:rgba(255,255,255,.6); text-decoration:none; transition:color .2s;
+}
+.nav-links a:hover { color:white; }
+.nav-cta {
+  padding:9px 22px; border:1px solid rgba(255,255,255,.35);
+  color:white; font-size:10px; letter-spacing:.15em; text-transform:uppercase;
+  cursor:pointer; text-decoration:none; transition:all .25s; background:transparent;
+}
+.nav-cta:hover { background:rgba(255,255,255,.1); border-color:white; }
+@media(max-width:768px){ .nav-links{display:none;} nav{padding:20px 20px;} }
+
+/* ────────────────────────────────────
+   HERO WRAPPER — espaço para o scroll enquanto pinned
+──────────────────────────────────── */
+#hero-wrapper {
+  height: 500vh;
+  position: relative;
+}
+
+/* ────────────────────────────────────
+   HERO — secção que fica sticky/pinned
+──────────────────────────────────── */
+#hero {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: #0d0c0b;
+}
+
+/* ── CAMADA 1: CÉU / FUNDO ── */
+#hero-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  will-change: transform;
+}
+#hero-sky img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+/* ── OVERLAY ESCURO SUAVE ── */
+#hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.15) 0%,
+    rgba(0,0,0,.0)  35%,
+    rgba(0,0,0,.25) 75%,
+    rgba(0,0,0,.55) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── CAMADA 2: TEXTO CENTRAL ── */
+#hero-text {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 20px;
+  will-change: transform, opacity;
+}
+
+/* Nome grande transparente */
+#hero-brand-text {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(80px, 16vw, 220px);
+  font-weight: 300;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,.7);
+  mix-blend-mode: overlay;
+  filter: drop-shadow(0 0 40px rgba(255,255,255,.15));
+  opacity: 0;
+  will-change: transform, opacity;
+}
+#hero-brand-sub {
+  display: block;
+  font-size: clamp(9px, 1.2vw, 13px);
+  font-weight: 300;
+  letter-spacing: .38em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.5);
+  margin-top: 16px;
+  opacity: 0;
+  will-change: opacity;
+}
+
+/* CTA inicial */
+#hero-intro {
+  position: absolute;
+  top: 50%; left: 50%;
+  z-index: 11;
+  text-align: center;
+  will-change: transform, opacity;
+  width: 90%;
+}
+#hero-intro-text {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px, 4vw, 58px);
+  font-weight: 300;
+  line-height: 1.25;
+  color: white;
+  text-shadow: 0 2px 60px rgba(0,0,0,0.5);
+  margin-bottom: 36px;
+}
+.hero-intro-btn {
+  display: inline-block;
+  padding: 13px 38px;
+  border: 1px solid rgba(255,255,255,0.55);
+  color: white;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(6px);
+  transition: all 0.25s;
+}
+.hero-intro-btn:hover { background:rgba(255,255,255,.18); border-color:white; }
+
+/* ── TAGLINE INFERIOR ── */
+#hero-tagline {
+  position: absolute;
+  bottom: 10vh; left: 0; right: 0;
+  z-index: 12;
+  text-align: center;
+  opacity: 0;
+  will-change: transform, opacity;
+}
+#hero-tagline span {
+  font-size: 11px; font-weight: 300; letter-spacing: .3em; text-transform: uppercase;
+  color: rgba(255,255,255,.4);
+}
+
+/* ── CAMADA 3: CASA (sobe no scroll, cobre o texto) ── */
+#hero-house {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  width: 100%;
+  max-width: 1600px;
+  will-change: transform;
+  /* Começa um pouco abaixo para o efeito de subida ser visível */
+  transform: translateX(-50%) translateY(18vh);
+}
+#hero-house img {
+  width: 100%;
+  height: auto;
+  display: block;
+  /* Alinha a base da imagem com a base do viewport */
+}
+
+/* ── CAMADA 4: NUVENS CSS ── */
+#clouds {
+  position: absolute;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Nuvens de fundo (lentas, subtis) */
+.cloud-back {
+  position: absolute;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 70%);
+  border-radius: 50%;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+#cb1 { width:90vw;  height:35vh; bottom:-20vh; left:-15%; }
+#cb2 { width:75vw;  height:30vh; bottom:-18vh; right:-10%; }
+#cb3 { width:55vw;  height:24vh; bottom:-15vh; left:25%; }
+
+/* Nuvens de primeiro plano (rápidas, densas) */
+.cloud-front {
+  position: absolute;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,.9) 0%, rgba(255,255,255,0) 65%);
+  border-radius: 50%;
+  will-change: transform, opacity;
+  opacity: 0;
+}
+#cf1 { width:120vw; height:45vh; bottom:-30vh; left:-25%; }
+#cf2 { width:100vw; height:40vh; bottom:-28vh; right:-20%; }
+#cf3 { width:80vw;  height:35vh; bottom:-25vh; left:10%; }
+/* Nuvens laterais */
+#cf4 { width:55vw;  height:55vh; top:40%; left:-8%;  border-radius:50%; transform:scaleX(.65); }
+#cf5 { width:55vw;  height:55vh; top:42%; right:-8%; border-radius:50%; transform:scaleX(.65); }
+
+/* ── WHITE/CREAM TRANSITION OVERLAY ── */
+#hero-white-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: var(--cream);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+/* ── SCROLL HINT ── */
+#scroll-hint {
+  position: absolute;
+  bottom: 32px; left: 50%; transform: translateX(-50%);
+  z-index: 35;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  opacity: 0;
+}
+.s-line {
+  width: 1px; height: 48px;
+  background: rgba(255,255,255,.2);
+  position: relative; overflow: hidden;
+}
+.s-line::after {
+  content: '';
+  position: absolute; top: -100%; left: 0; width: 100%; height: 100%;
+  background: rgba(255,255,255,.7);
+  animation: sfall 1.8s ease-in-out infinite;
+}
+@keyframes sfall { 0%{top:-100%;} 100%{top:100%;} }
+.s-label { font-size:8px; letter-spacing:.26em; text-transform:uppercase; color:rgba(255,255,255,.3); }
+
+/* ────────────────────────────────────
+   RESTANTE DA PÁGINA
+──────────────────────────────────── */
+#page-content { background:var(--cream); }
+
+/* INTRO */
+#intro {
+  color:#1C1917;
+  padding:140px 52px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px; align-items:center;
+}
+.reveal-wrap { overflow:hidden; display:block; }
+.reveal-line { display:block; will-change:transform,opacity; }
+.intro-big {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(38px,5vw,68px); font-weight:300; line-height:1.12;
+}
+.intro-big em { font-style:italic; color:var(--gold); }
+.intro-body { font-size:15px; line-height:1.9; color:#5A5550; }
+.intro-cta {
+  display:inline-flex; align-items:center; gap:8px; margin-top:28px;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--gold); border-bottom:1px solid rgba(160,132,92,.3); padding-bottom:4px;
+  text-decoration:none; transition:all .2s;
+}
+.intro-cta:hover { color:#1C1917; border-color:#1C1917; }
+
+/* PROPERTIES GRID */
+#props {
+  padding:80px 52px 140px;
+  background:var(--cream);
+}
+.eyebrow-s {
+  font-size:10px; letter-spacing:.28em; text-transform:uppercase;
+  color:var(--gold); margin-bottom:48px;
+  display:flex; align-items:center; gap:14px;
+}
+.eyebrow-s::before { content:''; width:28px; height:1px; background:var(--gold); opacity:.5; }
+.props-grid {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:2px; background:rgba(28,25,23,.08);
+}
+.prop-card { background:var(--cream); padding:44px 36px; opacity:0; transform:translateY(32px); }
+.prop-num {
+  font-family:'Playfair Display',serif; font-size:52px; font-weight:300;
+  color:var(--gold); opacity:.2; line-height:1; margin-bottom:20px;
+}
+.prop-title { font-family:'Playfair Display',serif; font-size:22px; font-weight:300; color:#1C1917; margin-bottom:10px; }
+.prop-loc { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#8a8480; margin-bottom:12px; }
+.prop-price { font-size:15px; font-weight:500; color:var(--gold); }
+
+/* CTA FINAL */
+#cta-final {
+  background:#131210; color:white;
+  padding:160px 52px; text-align:center;
+}
+#cta-final h2 {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(48px,8vw,100px); font-weight:300;
+  line-height:.95; letter-spacing:.04em; text-transform:uppercase;
+  margin-bottom:48px;
+}
+#cta-final h2 em { font-style:italic; color:rgba(255,215,140,.85); }
+.final-cta {
+  display:inline-block; padding:15px 44px; background:var(--gold); color:white;
+  font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  text-decoration:none; transition:background .25s;
+}
+.final-cta:hover { background:#c9a87c; }
+
+footer {
+  background:#0a0a0a; padding:28px 52px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-top:1px solid rgba(255,255,255,.05);
+}
+footer span { font-size:10px; color:rgba(255,255,255,.2); letter-spacing:.1em; text-transform:uppercase; }
+
+@media(max-width:900px){
+  #intro{ grid-template-columns:1fr; padding:80px 24px; gap:36px; }
+  #props{ padding:60px 24px 100px; }
+  .props-grid{ grid-template-columns:1fr; }
+  #cta-final{ padding:100px 24px; }
+  footer{ flex-direction:column; gap:10px; text-align:center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════ NAV ═══════ -->
+<nav id="main-nav">
+  <a href="index.html" class="nav-logo">
+    <svg width="20" height="23" viewBox="0 0 90 100" fill="none">
+      <line x1="12" y1="8" x2="12" y2="90" stroke="rgba(255,255,255,.8)" stroke-width="7" stroke-linecap="round"/>
+      <line x1="78" y1="8" x2="78" y2="90" stroke="rgba(255,255,255,.8)" stroke-width="7" stroke-linecap="round"/>
+      <line x1="12" y1="42" x2="45" y2="12" stroke="rgba(255,255,255,.8)" stroke-width="7" stroke-linecap="round"/>
+      <line x1="78" y1="42" x2="45" y2="12" stroke="rgba(255,255,255,.8)" stroke-width="7" stroke-linecap="round"/>
+      <rect x="24" y="50" width="42" height="36" stroke="rgba(255,255,255,.8)" stroke-width="6"/>
+      <rect x="33" y="59" width="24" height="18" stroke="rgba(255,255,255,.8)" stroke-width="5"/>
+      <line x1="2" y1="93" x2="88" y2="93" stroke="rgba(255,255,255,.8)" stroke-width="7" stroke-linecap="round"/>
+    </svg>
+    <span class="nav-logo-text">Satus</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="imoveis.html">Imóveis</a></li>
+    <li><a href="index.html#locations">Zonas</a></li>
+    <li><a href="index.html#about">Sobre nós</a></li>
+    <li><a href="index.html#contact">Contacto</a></li>
+  </ul>
+  <a href="index.html#contact" class="nav-cta">Fale connosco →</a>
+</nav>
+
+<!-- ═══════ HERO WRAPPER ═══════ -->
+<div id="hero-wrapper">
+  <section id="hero">
+
+    <!-- CAMADA 1: Céu / fundo completo -->
+    <div id="hero-sky">
+      <img src="background.png" alt="Paisagem">
+    </div>
+
+    <!-- Overlay escuro -->
+    <div id="hero-overlay"></div>
+
+    <!-- CAMADA 2: Texto inicial (CTA) -->
+    <div id="hero-intro">
+      <p id="hero-intro-text">Procura Comprar<br>ou Vender a sua casa?</p>
+      <a href="index.html#contact" class="hero-intro-btn">Fale connosco →</a>
+    </div>
+
+    <!-- Nome transparente + subtítulo (aparece no scroll) -->
+    <div id="hero-text">
+      <span id="hero-brand-text">Satus</span>
+      <span id="hero-brand-sub">Afonso Lucas · Carolina Cunha</span>
+    </div>
+
+    <!-- Tagline inferior -->
+    <div id="hero-tagline">
+      <span>Cascais · Estoril · Lisboa</span>
+    </div>
+
+    <!-- CAMADA 3: Casa (sobe no scroll, cobre o texto) -->
+    <div id="hero-house">
+      <img src="backgroundcima.png" alt="Moradia">
+    </div>
+
+    <!-- CAMADA 4: Nuvens CSS (surgem depois da casa) -->
+    <div id="clouds">
+      <div class="cloud-back" id="cb1"></div>
+      <div class="cloud-back" id="cb2"></div>
+      <div class="cloud-back" id="cb3"></div>
+      <div class="cloud-front" id="cf1"></div>
+      <div class="cloud-front" id="cf2"></div>
+      <div class="cloud-front" id="cf3"></div>
+      <div class="cloud-front" id="cf4"></div>
+      <div class="cloud-front" id="cf5"></div>
+    </div>
+
+    <!-- Overlay branco para transição -->
+    <div id="hero-white-overlay"></div>
+
+    <!-- Scroll hint -->
+    <div id="scroll-hint">
+      <div class="s-line"></div>
+      <span class="s-label">Scroll</span>
+    </div>
+
+  </section>
+</div>
+
+<!-- ═══════ RESTANTE DA PÁGINA ═══════ -->
+<div id="page-content">
+
+  <section id="intro">
+    <div>
+      <h2 class="intro-big">
+        <div class="reveal-wrap"><div class="reveal-line">O imóvel</div></div>
+        <div class="reveal-wrap"><div class="reveal-line">certo para</div></div>
+        <div class="reveal-wrap"><div class="reveal-line"><em>si existe.</em></div></div>
+      </h2>
+    </div>
+    <div>
+      <p class="intro-body" id="intro-p">Especializados no mercado premium de Cascais, Estoril e Lisboa, acompanhamos cada cliente com rigor, discrição e dedicação total. Não vendemos casas — encontramos o lugar onde a sua vida muda.</p>
+      <a href="imoveis.html" class="intro-cta" id="intro-link">Ver todos os imóveis →</a>
+    </div>
+  </section>
+
+  <section id="props">
+    <div class="eyebrow-s">Imóveis em Destaque</div>
+    <div class="props-grid">
+      <div class="prop-card">
+        <div class="prop-num">01</div>
+        <div class="prop-title">Jardins da Parede</div>
+        <div class="prop-loc">São Pedro do Estoril, Cascais</div>
+        <div class="prop-price">€710.000</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-num">02</div>
+        <div class="prop-title">Penthouse com Vista Mar</div>
+        <div class="prop-loc">Estoril</div>
+        <div class="prop-price">Preço sob consulta</div>
+      </div>
+      <div class="prop-card">
+        <div class="prop-num">03</div>
+        <div class="prop-title">Moradia com Piscina</div>
+        <div class="prop-loc">Cascais, Birre</div>
+        <div class="prop-price">€1.850.000</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cta-final">
+    <h2>
+      <div class="reveal-wrap"><div class="reveal-line">Pronto para</div></div>
+      <div class="reveal-wrap"><div class="reveal-line"><em>encontrar</em></div></div>
+      <div class="reveal-wrap"><div class="reveal-line">o seu imóvel?</div></div>
+    </h2>
+    <a href="index.html#contact" class="final-cta">Fale connosco →</a>
+  </section>
+
+  <footer>
+    <span>© 2025 Satus Imobiliário</span>
+    <span>Afonso Lucas · Carolina Cunha</span>
+    <span>Cascais · Estoril · Lisboa</span>
+  </footer>
+
+</div>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ══════════════════════════════════════════════
+   LENIS — Scroll suave
+══════════════════════════════════════════════ */
+const lenis = new Lenis({
+  duration: 1.6,
+  easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+});
+gsap.ticker.add(time => lenis.raf(time * 1000));
+gsap.ticker.lagSmoothing(0);
+
+/* ══════════════════════════════════════════════
+   ELEMENTOS
+══════════════════════════════════════════════ */
+const nav           = document.getElementById('main-nav');
+const heroIntro     = document.getElementById('hero-intro');
+const heroText      = document.getElementById('hero-text');
+const brandText     = document.getElementById('hero-brand-text');
+const brandSub      = document.getElementById('hero-brand-sub');
+const tagline       = document.getElementById('hero-tagline');
+const heroHouse     = document.getElementById('hero-house');
+const whiteOverlay  = document.getElementById('hero-white-overlay');
+const scrollHint    = document.getElementById('scroll-hint');
+const heroSky       = document.getElementById('hero-sky');
+
+/* ══════════════════════════════════════════════
+   ESTADO INICIAL
+══════════════════════════════════════════════ */
+/* CTA centrado com GSAP */
+gsap.set(heroIntro, { xPercent: -50, yPercent: -50 });
+
+/* Casa começa 18vh abaixo da posição natural (definida em CSS) */
+/* Já definida no CSS: transform: translateX(-50%) translateY(18vh) */
+
+/* Texto SATUS e tagline invisíveis */
+gsap.set(brandText, { opacity: 0, y: 30 });
+gsap.set(brandSub,  { opacity: 0 });
+gsap.set(tagline,   { opacity: 0, y: 16 });
+
+/* Nuvens CSS começam abaixo do ecrã */
+gsap.set('.cloud-back',  { y: '40vh', opacity: 0 });
+gsap.set('.cloud-front', { y: '60vh', opacity: 0 });
+gsap.set('#cf4',         { y: '0',    opacity: 0, x: '-30vw' });
+gsap.set('#cf5',         { y: '0',    opacity: 0, x: '30vw' });
+
+/* NAV entra ao carregar */
+gsap.to(nav, { opacity: 1, duration: 1.2, delay: 0.5, ease: 'power2.out' });
+
+/* Scroll hint entra ao carregar */
+gsap.to(scrollHint, { opacity: 1, duration: 1.2, delay: 1.4, ease: 'power2.out' });
+
+/* ══════════════════════════════════════════════
+   TIMELINE PRINCIPAL — scrub com pin via sticky
+   (o #hero já é sticky no CSS, o wrapper dá o espaço)
+══════════════════════════════════════════════ */
+const heroTL = gsap.timeline({
+  scrollTrigger: {
+    trigger: '#hero-wrapper',
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: 1.4,
+  }
+});
+
+/*
+  FASE 1 (0% → 20%):
+  CTA desaparece para baixo (como se fosse para "trás" da casa).
+  Scroll hint sai.
+  Casa começa a subir.
+*/
+heroTL
+  .to(heroIntro, {
+    yPercent: 35,
+    opacity: 0,
+    duration: 0.20,
+    ease: 'power2.in'
+  }, 0)
+
+  .to(scrollHint, { opacity: 0, duration: 0.08 }, 0.02)
+
+  /* Fundo (céu) faz muito leve paralaxe para cima */
+  .to(heroSky, {
+    y: '-6vh',
+    duration: 1,
+    ease: 'none'
+  }, 0)
+
+/*
+  FASE 2 (15% → 45%):
+  Casa sobe para a posição final (cobre a zona onde estava o texto).
+  Nome SATUS aparece por cima (mix-blend-mode faz magia com a imagem).
+*/
+  /* Casa sobe — de translateY(18vh) para translateY(-5vh) */
+  .to(heroHouse, {
+    y: '-23vh',   /* move 23vh: vai de +18vh (CSS) até -5vh */
+    duration: 0.40,
+    ease: 'power2.out'
+  }, 0.12)
+
+  /* SATUS aparece enquanto a casa sobe */
+  .to(brandText, {
+    opacity: 1,
+    y: 0,
+    duration: 0.22,
+    ease: 'power3.out'
+  }, 0.20)
+
+  .to(brandSub, {
+    opacity: 1,
+    duration: 0.18,
+    ease: 'power2.out'
+  }, 0.28)
+
+  .to(tagline, {
+    opacity: 1,
+    y: 0,
+    duration: 0.18,
+    ease: 'power2.out'
+  }, 0.32)
+
+/*
+  FASE 3 (48% → 78%):
+  Nuvens CSS sobem de baixo e cobrem a cena.
+  Nuvens de fundo mais devagar; de frente mais rápidas.
+*/
+  /* Nuvens de FUNDO */
+  .to('#cb1', { y: '-5vh',  opacity: 0.75, duration: 0.28, ease: 'power2.out' }, 0.48)
+  .to('#cb2', { y: '-4vh',  opacity: 0.65, duration: 0.28, ease: 'power2.out' }, 0.50)
+  .to('#cb3', { y: '-8vh',  opacity: 0.70, duration: 0.26, ease: 'power2.out' }, 0.52)
+
+  /* Nuvens de FRENTE — sobem alto e cobrem o centro */
+  .to('#cf1', { y: '-85vh', opacity: 1,    duration: 0.30, ease: 'power3.out' }, 0.52)
+  .to('#cf2', { y: '-75vh', opacity: 1,    duration: 0.30, ease: 'power3.out' }, 0.54)
+  .to('#cf3', { y: '-65vh', opacity: 0.95, duration: 0.28, ease: 'power3.out' }, 0.55)
+
+  /* Nuvens laterais entram dos lados */
+  .to('#cf4', { x: '0',     opacity: 0.85, duration: 0.28, ease: 'power2.out' }, 0.53)
+  .to('#cf5', { x: '0',     opacity: 0.85, duration: 0.28, ease: 'power2.out' }, 0.53)
+
+/*
+  FASE 4 (78% → 97%):
+  Overlay branco/creme aparece → transição suave para a próxima secção.
+*/
+  .to(whiteOverlay, {
+    opacity: 1,
+    duration: 0.18,
+    ease: 'power2.inOut'
+  }, 0.78)
+
+  .to({}, { duration: 0.05 });
+
+
+/* ══════════════════════════════════════════════
+   PÁGINA ABAIXO — animações ao scroll
+══════════════════════════════════════════════ */
+
+gsap.utils.toArray('#intro .reveal-line').forEach((line, i) => {
+  gsap.from(line, {
+    yPercent: 100, opacity: 0, duration: 1.0, ease: 'power4.out',
+    scrollTrigger: { trigger: line, start: 'top 88%' },
+    delay: i * 0.09
+  });
+});
+gsap.from('#intro-p', {
+  opacity: 0, y: 20, duration: 0.9, ease: 'power3.out',
+  scrollTrigger: { trigger: '#intro-p', start: 'top 85%' }
+});
+gsap.from('#intro-link', {
+  opacity: 0, y: 14, duration: 0.9, ease: 'power3.out', delay: 0.15,
+  scrollTrigger: { trigger: '#intro-link', start: 'top 88%' }
+});
+
+gsap.to('.prop-card', {
+  opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.15,
+  scrollTrigger: { trigger: '.props-grid', start: 'top 80%' }
+});
+
+gsap.utils.toArray('#cta-final .reveal-line').forEach((line, i) => {
+  gsap.from(line, {
+    yPercent: 100, opacity: 0, duration: 1.0, ease: 'power4.out',
+    scrollTrigger: { trigger: '#cta-final', start: 'top 75%' },
+    delay: i * 0.12
+  });
+});
+gsap.from('.final-cta', {
+  opacity: 0, y: 20, duration: 0.9, ease: 'power3.out', delay: 0.4,
+  scrollTrigger: { trigger: '.final-cta', start: 'top 85%' }
+});
+</script>
+</body>
+</html>
