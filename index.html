@@ -970,8 +970,6 @@ footer{background:#0F0E0C;color:rgba(245,241,235,.4);padding:52px;display:grid;g
 #properties{
   position:relative;
   z-index:2;
-  border-radius:28px 28px 0 0;
-  box-shadow:0 -24px 80px rgba(28,25,23,.22);
 }
 .hero-bg video{
   will-change:transform;
@@ -1685,20 +1683,43 @@ footer{background:#0F0E0C;color:rgba(245,241,235,.4);padding:52px;display:grid;g
 
 /* ── RESPONSIVE ── */
 @media(max-width:760px){
-  .ps3-intro{padding:0 6vw;}
+  .ps3-intro{padding:0 6vw;height:90vh;min-height:520px;}
+
+  /* uma coluna: media em cima, texto em baixo */
   .ps3-row{grid-template-columns:1fr;min-height:auto;direction:ltr!important;}
   .ps3-row>*{direction:ltr!important;}
-  .ps3-img-side{height:60vw;}
-  .ps3-img-side.ps3-phone-wrap{height:auto;min-height:0;padding:48px 0;overflow:visible;}
-  .ps3-reels-phone{width:min(220px,58vw);}
+
+  /* imagens — largura total, altura consistente e imersiva */
+  .ps3-img-side{height:74vw;max-height:440px;}
+
+  /* telemóvel (Marketing de Luxo) — bloco próprio, centrado, sem corte */
+  .ps3-img-side.ps3-phone-wrap{
+    height:auto;min-height:0;padding:54px 0 58px;overflow:visible;background:#141712;
+  }
+  .ps3-reels-phone{width:min(215px,54vw);}
+
+  /* globo (Rede Internacional) — bloco quadrado para caber inteiro */
+  .ps3-img-side.ps3-globe-wrap{
+    height:auto;aspect-ratio:1/1;max-height:88vw;
+  }
+  .ps3-globe-inner{width:80%;max-width:330px;transform:scale(.96);}
+
+  /* texto */
   .ps3-text-side,
-  .ps3-row:nth-child(even) .ps3-text-side{padding:52px 6vw;}
-  .ps3-ghost{font-size:clamp(5rem,22vw,12rem);}
+  .ps3-row:nth-child(even) .ps3-text-side{padding:46px 7vw 58px;}
+  .ps3-desc{max-width:none;}
+  .ps3-ghost{font-size:clamp(6rem,26vw,12rem);top:-.06em;right:-.02em;}
+  .ps3-title{margin-bottom:24px;}
+  .ps3-divider{margin-bottom:24px;}
+  .ps3-idx{margin-bottom:22px;}
 }
 @media(max-width:480px){
   .ps3-hl{font-size:clamp(3rem,13vw,5rem);}
-  .ps3-title{font-size:clamp(2rem,8vw,3rem);}
-  .ps3-desc{font-size:.85rem;}
+  .ps3-title{font-size:clamp(2rem,8.5vw,3rem);}
+  .ps3-desc{font-size:.88rem;line-height:1.75;}
+  .ps3-img-side{height:82vw;max-height:400px;}
+  .ps3-reels-phone{width:min(200px,60vw);}
+  .ps3-globe-inner{max-width:290px;}
 }
 </style>
 
