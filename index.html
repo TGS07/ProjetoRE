@@ -24,6 +24,42 @@ img,svg,video,iframe{max-width:100%;}
 html{overflow-x:hidden;width:100%;scroll-behavior:smooth;background:#0a1a14;}
 body{font-family:'Raleway',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden;width:100%;}
 
+/* ═══ LOADING SCREEN ═══ */
+body.loading{overflow:hidden!important;height:100vh;}
+#loader{
+  position:fixed;inset:0;z-index:99999;
+  background:#0f1310;
+  display:flex;align-items:center;justify-content:center;
+  touch-action:none;
+  transition:opacity .8s ease .1s, visibility .8s ease .1s;
+}
+#loader.done{opacity:0;visibility:hidden;pointer-events:none;}
+.loader-inner{display:flex;flex-direction:column;align-items:center;}
+.loader-word{
+  position:relative;
+  font-family:'Cormorant Garamond',serif;font-weight:300;
+  font-size:clamp(3.2rem,13vw,7rem);
+  letter-spacing:.26em;text-indent:.26em;line-height:1;
+}
+.loader-word-base,.loader-word-fill{display:block;}
+.loader-word-base{color:rgba(245,241,235,.13);}
+.loader-word-fill{
+  position:absolute;top:0;left:0;right:0;
+  color:#f5f1eb;
+  clip-path:inset(100% 0 0 0);
+  transition:clip-path .35s cubic-bezier(.4,0,.2,1);
+}
+.loader-sub{
+  font-family:'Raleway',sans-serif;font-size:.6rem;
+  letter-spacing:.42em;text-indent:.42em;
+  color:rgba(245,241,235,.4);margin-top:22px;
+}
+.loader-pct{
+  font-family:'Raleway',sans-serif;font-size:.72rem;
+  letter-spacing:.2em;color:rgba(201,169,110,.85);margin-top:26px;
+  font-variant-numeric:tabular-nums;
+}
+
 /* NAV */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:200;
@@ -882,11 +918,29 @@ footer{background:#0F0E0C;color:rgba(245,241,235,.4);padding:52px;display:grid;g
   .slide-card{flex:0 0 calc(50% - 2px);}
   .slide-img{height:420px;}
   .feat-grid{grid-template-columns:repeat(2,1fr);}
-  .testis-sticky{flex-direction:column;gap:32px;padding:40px 32px;}
-  .testis-left{max-width:100%;text-align:center;}
+  /* testimonials → carrossel horizontal nativo (suave) no mobile */
+  .testis-scroll-zone{height:auto!important;position:static;}
+  .testis-sticky{position:static!important;height:auto!important;flex-direction:column;gap:30px;padding:64px 0 70px;overflow:visible;}
+  .testis-left{max-width:100%;text-align:center;padding:0 24px;}
   .testis-left .eyebrow{justify-content:center;}
   .testis-left .eyebrow::before{display:none;}
   .testis-num{display:none;}
+  .testis-deck-area{width:100%;}
+  .testis-deck{
+    position:relative!important;width:100%!important;height:auto!important;perspective:none;
+    display:flex;gap:14px;
+    overflow-x:auto;scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+    padding:6px 24px 2px;scrollbar-width:none;
+  }
+  .testis-deck::-webkit-scrollbar{display:none;}
+  .testi-card{
+    position:relative!important;inset:auto!important;
+    transform:none!important;opacity:1!important;z-index:auto!important;
+    flex:0 0 84%;scroll-snap-align:center;
+    height:auto;min-height:340px;
+  }
+  .testis-dots{margin-top:22px;}
   .locs-grid{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
   .loc:first-child{grid-row:auto;grid-column:1/3;height:280px;}
   .loc{height:220px;}
@@ -937,9 +991,10 @@ footer{background:#0F0E0C;color:rgba(245,241,235,.4);padding:52px;display:grid;g
   .locs-grid{grid-template-columns:1fr;grid-template-rows:auto;gap:9px;}
   .loc:first-child{grid-row:auto;grid-column:auto;height:220px;}
   .loc{height:190px;}
-  .testis-sticky{gap:24px;padding:30px 18px;}
-  .testis-deck{height:400px;width:min(320px,90vw);}
-  .testis-scroll-zone{height:320vh;}
+  .testis-sticky{gap:24px;padding:52px 0 60px;}
+  .testis-left{padding:0 18px;}
+  .testis-deck{padding:6px 18px 2px;}
+  .testi-card{flex:0 0 88%;padding:34px 28px;}
   #agents-duo-cards{grid-template-columns:1fr !important;gap:20px !important;}
   #agents-duo-cards > div > div:first-child{height:280px !important;}
   #agents-duo-cards .agent-card-body{padding:22px 20px 26px !important;}
@@ -1087,7 +1142,19 @@ footer{background:#0F0E0C;color:rgba(245,241,235,.4);padding:52px;display:grid;g
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 </head>
-<body>
+<body class="loading">
+
+<!-- ═══ LOADING SCREEN ═══ -->
+<div id="loader" aria-hidden="true">
+  <div class="loader-inner">
+    <div class="loader-word" aria-label="SATUS">
+      <span class="loader-word-base">SATUS</span>
+      <span class="loader-word-fill" id="loader-fill">SATUS</span>
+    </div>
+    <div class="loader-sub">REAL ESTATE</div>
+    <div class="loader-pct" id="loader-pct">0%</div>
+  </div>
+</div>
 
 <div id="menu-backdrop" onclick="closeMenu()"></div>
 <div id="mobile-menu">
@@ -1611,15 +1678,64 @@ footer{background:#0F0E0C;color:rgba(245,241,235,.4);padding:52px;display:grid;g
   display:flex;align-items:center;justify-content:center;
   width:100%;height:100%;
 }
+/* iPhone 16 em HTML/CSS */
 .ps3-reels-phone{
+  position:relative;
   width:min(300px,40vw);
-  filter:drop-shadow(0 40px 80px rgba(0,0,0,.7));
+  aspect-ratio:201/412;
+  background:linear-gradient(145deg,#4a4a4d 0%,#1c1c1e 34%,#0a0a0a 100%);
+  border-radius:52px;
+  padding:8px;
+  box-shadow:0 44px 80px rgba(0,0,0,.72),
+             inset 0 0 0 1px rgba(255,255,255,.10),
+             inset 0 0 0 3px #0a0a0a;
   transform:scale(1.08) translateY(30px);
   opacity:0;
   transition:opacity .8s .7s ease, transform .8s .7s cubic-bezier(.22,1,.36,1);
 }
 .ps3-row.in .ps3-reels-phone{
   opacity:1;transform:scale(1) translateY(0);
+}
+/* botões laterais */
+.ps3-reels-phone::before{
+  content:'';position:absolute;right:-2px;top:32%;
+  width:3px;height:10%;background:#3a3a3d;border-radius:0 3px 3px 0;
+}
+.ps3-reels-phone::after{
+  content:'';position:absolute;left:-2px;top:22%;
+  width:3px;height:6%;background:#3a3a3d;border-radius:3px 0 0 3px;
+  box-shadow:0 calc(8% + 8px) 0 #3a3a3d, 0 calc(16% + 20px) 0 #3a3a3d;
+}
+.iphone-screen{
+  position:relative;width:100%;height:100%;
+  border-radius:44px;overflow:hidden;background:#000;
+}
+.iphone-video{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;
+}
+.iphone-screen::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,transparent 46%,rgba(0,0,0,.68) 100%);
+}
+.iphone-island{
+  position:absolute;top:2.8%;left:50%;transform:translateX(-50%);
+  width:30%;height:3.4%;min-height:20px;
+  background:#000;border-radius:20px;z-index:3;
+}
+.iphone-caption{
+  position:absolute;left:7%;right:7%;bottom:5.5%;z-index:3;
+  display:flex;flex-direction:column;gap:3px;
+}
+.iphone-cap-eyebrow{
+  font-family:'Raleway',sans-serif;font-size:.58rem;font-weight:500;
+  letter-spacing:.12em;color:#c9a96e;
+}
+.iphone-cap-title{
+  font-family:'Raleway',sans-serif;font-size:.78rem;font-weight:600;color:#fff;
+}
+.iphone-cap-sub{
+  font-family:'Raleway',sans-serif;font-size:.62rem;color:rgba(255,255,255,.75);
 }
 
 /* text side */
@@ -1770,46 +1886,21 @@ footer{background:#0F0E0C;color:rgba(245,241,235,.4);padding:52px;display:grid;g
     <div class="ps3-row">
       <div class="ps3-img-side ps3-phone-wrap">
         <div class="ps3-phone-container">
-          <!-- SVG iPhone a dar Reels -->
-          <svg class="ps3-reels-phone" viewBox="-6 0 212 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="iPhone com Reels">
-            <defs>
-              <linearGradient id="rg-overlay" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="45%" stop-color="transparent"/>
-                <stop offset="100%" stop-color="rgba(0,0,0,.65)"/>
-              </linearGradient>
-              <clipPath id="rg-frame-clip">
-                <rect x="2" y="0" width="196" height="400" rx="36"/>
-              </clipPath>
-            </defs>
-
-            <!-- Phone body -->
-            <rect x="0" y="0" width="200" height="400" rx="38" fill="#0a0a0a"/>
-            <rect x="1" y="1" width="198" height="398" rx="37" fill="none" stroke="#333" stroke-width="1"/>
-
-            <!-- Video reels.mp4 a ocupar todo o ecrã -->
-            <foreignObject x="2" y="0" width="196" height="400" clip-path="url(#rg-frame-clip)">
-              <video xmlns="http://www.w3.org/1999/xhtml" autoplay muted loop playsinline
-                style="width:100%;height:100%;object-fit:cover;display:block;">
-                <source src="reels.mp4" type="video/mp4"/>
+          <!-- iPhone 16 (HTML/CSS) a dar Reels -->
+          <div class="ps3-reels-phone" role="img" aria-label="iPhone com Reels">
+            <div class="iphone-screen">
+              <video class="iphone-video" autoplay muted loop playsinline preload="auto"
+                disablepictureinpicture x-webkit-airplay="deny">
+                <source src="reels.mp4" type="video/mp4">
               </video>
-            </foreignObject>
-            <!-- Dark overlay bottom -->
-            <rect x="2" y="0" width="196" height="400" rx="36" fill="url(#rg-overlay)" clip-path="url(#rg-frame-clip)"/>
-
-
-            <!-- Bottom text overlay -->
-            <text x="16" y="348" font-family="-apple-system,sans-serif" font-size="7" fill="#c9a96e" letter-spacing="1">SATUS · IMÓVEIS</text>
-            <text x="16" y="362" font-family="-apple-system,sans-serif" font-size="8" fill="white" font-weight="600">Villa de luxo em Cascais</text>
-            <text x="16" y="374" font-family="-apple-system,sans-serif" font-size="7" fill="rgba(255,255,255,.7)">Agende a sua visita →</text>
-
-            <!-- Notch / Dynamic Island -->
-            <rect x="74" y="10" width="52" height="16" rx="8" fill="#0a0a0a"/>
-
-            <!-- Side buttons (esquerda: volume; direita: power) -->
-            <rect x="-6" y="100" width="7" height="24" rx="3" fill="#1e1e1e"/>
-            <rect x="-6" y="132" width="7" height="24" rx="3" fill="#1e1e1e"/>
-            <rect x="199" y="118" width="7" height="38" rx="3" fill="#1e1e1e"/>
-          </svg>
+              <div class="iphone-island"></div>
+              <div class="iphone-caption">
+                <span class="iphone-cap-eyebrow">SATUS · IMÓVEIS</span>
+                <span class="iphone-cap-title">Villa de luxo em Cascais</span>
+                <span class="iphone-cap-sub">Agende a sua visita →</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="ps3-text-side">
@@ -2422,16 +2513,20 @@ async function submitForm(e) {
   }
 }
 
-// ── TESTIMONIALS — SCROLL CARD STACK ──
+// ── TESTIMONIALS — SCROLL CARD STACK (desktop) / CARROSSEL (mobile) ──
 (function() {
   var section = document.getElementById('testis-section');
   if (!section) return;
   var stickyArea = section.querySelector('.testis-sticky');
+  var deck  = document.getElementById('testis-deck');
   var cards = Array.from(section.querySelectorAll('.testi-card'));
   var dots  = Array.from(section.querySelectorAll('.testis-dot'));
   var numEl = document.getElementById('testis-num');
   var N = cards.length;
   if (!N) return;
+
+  var mq = window.matchMedia('(max-width:768px)');
+  function isMobile(){ return mq.matches; }
 
   function clamp(v, mn, mx) { return Math.max(mn, Math.min(mx, v)); }
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -2522,8 +2617,21 @@ async function submitForm(e) {
     });
   }
 
+  // sincroniza os dots/número com a posição do carrossel (mobile)
+  function syncCarousel() {
+    if (!deck) return;
+    var cardW = deck.scrollWidth / N;
+    var idx = clamp(Math.round(deck.scrollLeft / cardW), 0, N - 1);
+    if (idx !== lastActive) {
+      dots.forEach(function(d, i){ d.classList.toggle('active', i === idx); });
+      if (numEl) numEl.textContent = NUMS[idx] || '0' + (idx + 1);
+      lastActive = idx;
+    }
+  }
+
   function update() {
     rafId = null;
+    if (isMobile()) { syncCarousel(); return; }  // no mobile é carrossel nativo
     updatePin();
     updateCards(getProgress());
   }
@@ -2533,7 +2641,8 @@ async function submitForm(e) {
   }
 
   window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', update, { passive: true });
+  window.addEventListener('resize', function(){ lastActive = -1; update(); }, { passive: true });
+  if (deck) deck.addEventListener('scroll', function(){ if (isMobile() && !rafId) rafId = requestAnimationFrame(update); }, { passive: true });
   update();
 })();
 
@@ -2726,6 +2835,87 @@ function submitSearchModal(){
   closeSearchModal();
   window.location.href = 'imoveis.html' + (tipo ? '?intent=' + tipo : '');
 }
+
+// ═══ HERO VIDEO — autoplay garantido, sempre em loop, sem botão ═══
+(function(){
+  var vids = Array.prototype.slice.call(document.querySelectorAll('#hero-video, .iphone-video'));
+  vids.forEach(function(v){
+    try { v.muted = true; v.defaultMuted = true; v.setAttribute('muted',''); } catch(e){}
+    v.playsInline = true;
+    function kick(){ var p = v.play(); if (p && p.catch) p.catch(function(){}); }
+    kick();
+    v.addEventListener('canplay', kick);
+    v.addEventListener('loadeddata', kick);
+    // se por algum motivo pausar (ex.: iOS), retoma
+    v.addEventListener('pause', function(){ if(!document.hidden) kick(); });
+    v.addEventListener('ended', function(){ v.currentTime = 0; kick(); });
+  });
+  // retomar quando a página volta a ficar visível ou ao 1º toque/scroll
+  function resumeAll(){ vids.forEach(function(v){ var p=v.play(); if(p&&p.catch) p.catch(function(){}); }); }
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) resumeAll(); });
+  window.addEventListener('touchstart', resumeAll, { passive:true, once:false });
+  window.addEventListener('scroll', resumeAll, { passive:true, once:true });
+})();
+
+// ═══ LOADING SCREEN — "SATUS" enche conforme a % sobe ═══
+(function(){
+  var loader = document.getElementById('loader');
+  var fill   = document.getElementById('loader-fill');
+  var pctEl  = document.getElementById('loader-pct');
+  if(!loader){ document.body.classList.remove('loading'); return; }
+  window.scrollTo(0,0);
+
+  var progress = 0, target = 0, finished = false;
+
+  var videos = Array.prototype.slice.call(document.querySelectorAll('video'));
+  var totalAssets = videos.length + 1;      // vídeos + evento window.load
+  var doneAssets  = 0;
+  function recalcTarget(){
+    target = (doneAssets >= totalAssets) ? 1 : Math.min(0.9, doneAssets / totalAssets);
+  }
+  function assetDone(){ doneAssets++; recalcTarget(); }
+
+  videos.forEach(function(v){
+    var fired = false;
+    function ok(){ if(fired) return; fired = true; assetDone(); }
+    if (v.readyState >= 3) { ok(); }
+    else {
+      v.addEventListener('canplaythrough', ok, { once:true });
+      v.addEventListener('loadeddata', ok, { once:true });
+      v.addEventListener('error', ok, { once:true });
+      setTimeout(ok, 6000); // fallback se o vídeo travar
+    }
+  });
+  if (document.readyState === 'complete') assetDone();
+  else window.addEventListener('load', assetDone);
+
+  var maxTimer = setTimeout(function(){ target = 1; }, 9000); // segurança
+
+  function finish(){
+    clearTimeout(maxTimer);
+    setTimeout(function(){
+      loader.classList.add('done');
+      document.body.classList.remove('loading');
+      window.scrollTo(0,0);
+      var vids = document.querySelectorAll('video');
+      for (var i=0;i<vids.length;i++){ var p=vids[i].play(); if(p&&p.catch) p.catch(function(){}); }
+      setTimeout(function(){ if(loader.parentNode) loader.parentNode.removeChild(loader); }, 900);
+    }, 380);
+  }
+
+  function tick(){
+    progress += (target - progress) * 0.09 + 0.0016;
+    if (progress > target) progress = target;
+    if (target >= 1 && progress > 0.996) progress = 1;
+    var pct = Math.min(100, Math.round(progress * 100));
+    fill.style.clipPath = 'inset(' + (100 - pct) + '% 0 0 0)';
+    pctEl.textContent = pct + '%';
+    if (pct >= 100 && !finished){ finished = true; finish(); return; }
+    requestAnimationFrame(tick);
+  }
+  recalcTarget();
+  requestAnimationFrame(tick);
+})();
 </script>
 </body>
 </html>
